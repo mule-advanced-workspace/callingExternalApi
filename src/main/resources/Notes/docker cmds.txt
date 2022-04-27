@@ -1,0 +1,36 @@
+1, generate docker image based on docker file. ("mule-docker-demo" this is name of image)
+	docker build -t mule-docker-demo -f Dockerfile .
+2, to check (""mule-docker-demo" image generated in docker or not
+	docker images 
+2a, to check container running on
+	docker ps -a
+
+3, run image on 8081 port : 
+	docker run -d -p 8091:8091 mule-docker-demo NOTE: application port should match wuth listner config
+4, create another instance for deployed image (changing port number is enough) port forwarding
+	docker run -d -p 8081:8091 mule-docker-demo
+syntax : docker run -d -p (port which u want ur container to run(host port)):(should match with listner port of mule application(application port)) image_name
+
+5, find the ip of container 
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
+5a, to interact/enter into specific container
+	docker exec -it container-id bash
+	
+NOTE**********************************
+1, Once step 4 done, container application should run on http:localhost:8081/callingExternalAPi/photos 
+2, or containerized application can be accessble via ipv4 ip address of ur machine which docker engine running , to know ip address "IPCONFIG" (Wireless LAN adapter Wi-Fi 2:)type this on cmd 
+
+**********************************
+
+************ Now Dockerizing and clustering mule applition, so that if u deploy application on specific cluster then all customers who
+are in the cluster can access the project
+
+1, open anypoint>runtime>server>add server>
+2, enter server name and copy amc cmd
+3, open docker app/desktop>open instace of image(mule-docker-demo) on which u wanna deploy ur app
+4, cd bin
+5, paste the amc cmd which is copied in step 2
+6, restart the instance by pressing stop and start in docker desktop app
+7, repeate 2 to 6 steps for all instaces under cluster
+8, runtime>server>>create cluster>multicast>select servers>submit>take some time, verify image logs if deployed or not
+9, once cluster created runtime>applications>deploy application>kepp application name>deployment target will be ur cluster name>choose jar>sumbit
